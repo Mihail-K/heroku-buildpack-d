@@ -60,11 +60,11 @@ mkdir -p "$CACHE_DIR/.dub"
 if [ ! -e "$BUILD_DIR/.dub" ]; then
     ln -s "$CACHE_DIR/.dub" "$BUILD_DIR/.dub"
 fi
-# if dub.json or package.json has contents, run dub build
+# if dub.json or package.json has contents (or dub.sdl), run dub build
 status=1
-if [ ! -s "$BUILD_DIR/dub.json" -a ! -s "$BUILD_DIR/package.json" ]; then
+if [ ! -s "$BUILD_DIR/dub.json" -a ! -s "$BUILD_DIR/package.json" -a ! -s "$BUILD_DIR/dub.sdl" ]; then
   echo
-  echo "!!! dub.json was empty" | indent
+  echo "!!! dub.json (and dub.sdl!) was empty" | indent
   status=1
 else
   # pre-build hook
@@ -101,4 +101,3 @@ fi
 rm -rf "$TOOL_DIR" source src views
 
 exit $status
-

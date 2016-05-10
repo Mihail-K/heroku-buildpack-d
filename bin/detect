@@ -2,7 +2,12 @@
 # bin/detect <build-dir>
 set -e
 
-if test -n "$(find "$1" -type f -name '*.d' | sed 1q)"
-then echo D
-else echo no; exit 1
+# dub.json or dub.sdl indicate a DLang app.
+# NOTE : Don't detect package.json. Might be a nodejs app.
+if [ ! -s "$BUILD_DIR/dub.json" -a ! -s "$BUILD_DIR/dub.sdl" ]; then
+  echo "D"
+  exit 0
+else
+  echo "no"
+  exit 1
 fi

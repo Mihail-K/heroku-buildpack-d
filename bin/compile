@@ -10,7 +10,7 @@ ARCHIVE_DIR=$CACHE_DIR/archives
 LIB_DIR=$CACHE_DIR/libs
 mkdir -p "$TOOL_DIR" "$ARCHIVE_DIR" "$LIB_DIR"
 
-DMD_VERSION=2.070.2
+DMD_VERSION=2.071.0
 DMD_ARCHIVE_PATH="http://downloads.dlang.org/releases/2.x/$DMD_VERSION"
 DMD_ARCHIVE="dmd.$DMD_VERSION.linux"
 DMD_DIR=dmd2
@@ -60,33 +60,28 @@ mkdir -p "$CACHE_DIR/.dub"
 if [ ! -e "$BUILD_DIR/.dub" ]; then
     ln -s "$CACHE_DIR/.dub" "$BUILD_DIR/.dub"
 fi
-# if dub.json or package.json has contents (or dub.sdl), run dub build
-status=1
-if [ ! -s "$BUILD_DIR/dub.json" -a ! -s "$BUILD_DIR/package.json" -a ! -s "$BUILD_DIR/dub.sdl" ]; then
-  echo
-  echo "!!! dub.json (and dub.sdl!) was empty" | indent
-  status=1
-else
-  # pre-build hook
-  cd "$BUILD_DIR"
-  if [ -f dub-prebuild ]; then
-    echo
-    echo "Running dub-prebuild…" | indent
-    ./dub-prebuild "$BUILD_DIR" "$CACHE_DIR" | indent
-    #chmod 755 /app/opt/lib/pkgconfig
-  fi
 
+status=1
+
+# pre-build hook
+cd "$BUILD_DIR"
+if [ -f dub-prebuild ]; then
   echo
-  echo "Running dub build…" | indent
-  if dub build --build=plain; then
-    echo
-    echo "Build was successful" | indent
-    status=0
-  else
-    echo
-    echo "!!! Build failed" | indent
-    status=1
-  fi
+  echo "Running dub-prebuild…" | indent
+  ./dub-prebuild "$BUILD_DIR" "$CACHE_DIR" | indent
+  #chmod 755 /app/opt/lib/pkgconfig
+fi
+
+echo
+echo "Running dub build…" | indent
+if dub build --build=plain; then
+  echo
+  echo "Build was successful" | indent
+  status=0
+else
+  echo
+  echo "!!! Build failed" | indent
+  status=1
 fi
 
 # post-build hook

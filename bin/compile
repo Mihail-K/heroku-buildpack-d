@@ -1,21 +1,30 @@
 #!/usr/bin/env bash
+
 BUILDPACK_DIR=$(cd "$(dirname $0)" && pwd)
 
 mkdir -p "$1" "$2"
 BUILD_DIR=$(cd "$1/" && pwd)
 CACHE_DIR=$(cd "$2/" && pwd)
 
+# - Version Selection
+
+DMD_VERSION=${DMD_VERSION:-"2.071.0"}
+DUB_VERSION="v${DUB_VERSION:-"0.9.24"}"
+
+# - Paths
+
+DMD_ARCHIVE_PATH="http://downloads.dlang.org/releases/2.x/$DMD_VERSION"
+DUB_ARCHIVE_PATH=https://github.com/D-Programming-Language/dub/archive
+
 TOOL_DIR=$BUILD_DIR/toolchain
 ARCHIVE_DIR=$CACHE_DIR/archives
 LIB_DIR=$CACHE_DIR/libs
+DMD_DIR=dmd2
+
 mkdir -p "$TOOL_DIR" "$ARCHIVE_DIR" "$LIB_DIR"
 
-DMD_VERSION=2.071.0
-DMD_ARCHIVE_PATH="http://downloads.dlang.org/releases/2.x/$DMD_VERSION"
 DMD_ARCHIVE="dmd.$DMD_VERSION.linux"
-DMD_DIR=dmd2
-DUB_ARCHIVE=v0.9.24
-DUB_ARCHIVE_PATH=https://github.com/D-Programming-Language/dub/archive
+DUB_ARCHIVE=$DUB_VERSION
 DUB_DIR=dub-${DUB_ARCHIVE#v}
 
 indent() {
@@ -69,7 +78,6 @@ if [ -f dub-prebuild ]; then
   echo
   echo "Running dub-prebuild…" | indent
   ./dub-prebuild "$BUILD_DIR" "$CACHE_DIR" | indent
-  #chmod 755 /app/opt/lib/pkgconfig
 fi
 
 echo
